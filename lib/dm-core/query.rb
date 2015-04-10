@@ -1017,7 +1017,7 @@ module DataMapper
             add_condition(condition)
 
           when Hash
-            condition.each { |kv| append_condition(*kv) }
+            condition.each { |key, value| append_condition(key, value) }
 
           when Array
             statement, *bind_values = *condition
@@ -1053,6 +1053,9 @@ module DataMapper
       @order = Array(@order)
       @order = @order.map do |order|
         case order
+          when Direction
+            order.dup
+
           when Operator
             target   = order.target
             property = target.kind_of?(Property) ? target : @properties[target]
@@ -1064,9 +1067,6 @@ module DataMapper
 
           when Property
             Direction.new(order)
-
-          when Direction
-            order.dup
 
           when Path
             Direction.new(order.property)
